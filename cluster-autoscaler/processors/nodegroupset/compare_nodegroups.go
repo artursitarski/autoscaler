@@ -25,6 +25,9 @@ import (
 )
 
 const (
+	// NodeGroupHwConfigLabel is a label specifying the type of hardware configuration that the nodes have
+	NodeGroupHwConfigLabel = "cluster-autoscaler.kubernetes.io/hardware-configuration-id"
+
 	// MaxAllocatableDifferenceRatio describes how Node.Status.Allocatable can differ between
 	// groups in the same NodeGroupSet
 	MaxAllocatableDifferenceRatio = 0.05
@@ -52,15 +55,23 @@ func compareResourceMapsWithTolerance(resources map[apiv1.ResourceName][]resourc
 	return true
 }
 
-// IsNodeInfoSimilar returns true if two NodeInfos are similar enough to consider
-// that the NodeGroups they come from are part of the same NodeGroupSet. The criteria are
-// somewhat arbitrary, but generally we check if resources provided by both nodes
-// are similar enough to likely be the same type of machine and if the set of labels
-// is the same (except for a pre-defined set of labels like hostname or zone).
+// IsNodeInfoSimilar returns true if two NodeInfos have the same hardware configuration or
+// are similar enough to consider that the NodeGroups they come from are part of the same
+// NodeGroupSet. The criteria are somewhat arbitrary, but generally we check if resources
+// provided by both nodes are similar enough to likely be the same type of machine and if
+// the set of labels is the same (except for a pre-defined set of labels like hostname or
+// zone).
 func IsNodeInfoSimilar(n1, n2 *schedulernodeinfo.NodeInfo) bool {
+	n1HwConfig := n1.Node().Labels[NodeGroupHwConfigLabel]
+	n2HwConfig := n2.Node().Labels[NodeGroupHwConfigLabel]
+	if n1HwConfig != "" && n1HwConfig == n2HwConfig {
+		return true
+	}
+
 	capacity := make(map[apiv1.ResourceName][]resource.Quantity)
 	allocatable := make(map[apiv1.ResourceName][]resource.Quantity)
 	free := make(map[apiv1.ResourceName][]resource.Quantity)
+
 	nodes := []*schedulernodeinfo.NodeInfo{n1, n2}
 	for _, node := range nodes {
 		for res, quantity := range node.Node().Status.Capacity {
@@ -76,6 +87,7 @@ func IsNodeInfoSimilar(n1, n2 *schedulernodeinfo.NodeInfo) bool {
 			free[res] = append(free[res], freeRes)
 		}
 	}
+
 	// For capacity we require exact match.
 	// If this is ever changed, enforcing MaxCoresTotal and MaxMemoryTotal limits
 	// as it is now may no longer work.
@@ -84,6 +96,7 @@ func IsNodeInfoSimilar(n1, n2 *schedulernodeinfo.NodeInfo) bool {
 			return false
 		}
 	}
+
 	// For allocatable and free we allow resource quantities to be within a few % of each other
 	if !compareResourceMapsWithTolerance(allocatable, MaxAllocatableDifferenceRatio) {
 		return false
@@ -108,10 +121,12 @@ func IsNodeInfoSimilar(n1, n2 *schedulernodeinfo.NodeInfo) bool {
 			}
 		}
 	}
+
 	for _, labelValues := range labels {
 		if len(labelValues) != 2 || labelValues[0] != labelValues[1] {
 			return false
 		}
 	}
+
 	return true
 }
