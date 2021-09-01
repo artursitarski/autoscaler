@@ -115,7 +115,7 @@ func CreateGenericNodeInfoComparator(extraIgnoredLabels []string) NodeInfoCompar
 // the set of labels is the same (except for a pre-defined set of labels like hostname or
 // zone).
 func IsCloudProviderNodeInfoSimilar(n1, n2 *schedulerframework.NodeInfo, ignoredLabels map[string]bool) bool {
-  n1HwConfig := n1.Node().Labels[NodeGroupHwConfigLabel]
+	n1HwConfig := n1.Node().Labels[NodeGroupHwConfigLabel]
 	n2HwConfig := n2.Node().Labels[NodeGroupHwConfigLabel]
 	if n1HwConfig != "" && n1HwConfig == n2HwConfig {
 		return true
