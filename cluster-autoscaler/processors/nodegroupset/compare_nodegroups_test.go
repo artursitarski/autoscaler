@@ -100,7 +100,7 @@ func TestNodesSimilarVariousRequirementsAndPods(t *testing.T) {
 }
 
 func TestNodesSimilarHardwareConfigurationLabels(t *testing.T) {
-  comparator := CreateGenericNodeInfoComparator([]string{})
+	comparator := CreateGenericNodeInfoComparator([]string{})
 	nodeGroupHwConfigLabel := "node.kubernetes.io/autoscaler-hardware-configuration-id"
 
 	n1 := BuildTestNode("node1", 1000, 2000)
