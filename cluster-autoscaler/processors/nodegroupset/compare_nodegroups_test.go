@@ -100,6 +100,7 @@ func TestNodesSimilarVariousRequirementsAndPods(t *testing.T) {
 }
 
 func TestNodesSimilarHardwareConfigurationLabels(t *testing.T) {
+  comparator := CreateGenericNodeInfoComparator([]string{})
 	nodeGroupHwConfigLabel := "node.kubernetes.io/autoscaler-hardware-configuration-id"
 
 	n1 := BuildTestNode("node1", 1000, 2000)
@@ -109,32 +110,32 @@ func TestNodesSimilarHardwareConfigurationLabels(t *testing.T) {
 	n2.ObjectMeta.Labels["test-label"] = "test-value"
 
 	// No hardware-configuration-id labels
-	checkNodesSimilar(t, n1, n2, IsCloudProviderNodeInfoSimilar, false)
+	checkNodesSimilar(t, n1, n2, comparator, false)
 
 	// Empty hardware-configuration-id labels
 	n1.ObjectMeta.Labels[nodeGroupHwConfigLabel] = ""
 	n2.ObjectMeta.Labels[nodeGroupHwConfigLabel] = ""
-	checkNodesSimilar(t, n1, n2, IsCloudProviderNodeInfoSimilar, false)
+	checkNodesSimilar(t, n1, n2, comparator, false)
 
 	// Only one hardware-configuration-id non empty
 	n1.ObjectMeta.Labels[nodeGroupHwConfigLabel] = ""
 	n2.ObjectMeta.Labels[nodeGroupHwConfigLabel] = "blah"
-	checkNodesSimilar(t, n1, n2, IsCloudProviderNodeInfoSimilar, false)
+	checkNodesSimilar(t, n1, n2, comparator, false)
 
 	// Only one hardware-configuration-id present
 	delete(n1.ObjectMeta.Labels, nodeGroupHwConfigLabel)
 	n2.ObjectMeta.Labels[nodeGroupHwConfigLabel] = "blah"
-	checkNodesSimilar(t, n1, n2, IsCloudProviderNodeInfoSimilar, false)
+	checkNodesSimilar(t, n1, n2, comparator, false)
 
 	// Different vales for hardware-configuration-id
 	n1.ObjectMeta.Labels[nodeGroupHwConfigLabel] = "blah1"
 	n2.ObjectMeta.Labels[nodeGroupHwConfigLabel] = "blah2"
-	checkNodesSimilar(t, n1, n2, IsCloudProviderNodeInfoSimilar, false)
+	checkNodesSimilar(t, n1, n2, comparator, false)
 
 	// Same values for hardware-configuration-id
 	n1.ObjectMeta.Labels[nodeGroupHwConfigLabel] = "blah"
 	n2.ObjectMeta.Labels[nodeGroupHwConfigLabel] = "blah"
-	checkNodesSimilar(t, n1, n2, IsCloudProviderNodeInfoSimilar, true)
+	checkNodesSimilar(t, n1, n2, comparator, true)
 }
 
 func TestNodesSimilarVariousMemoryRequirements(t *testing.T) {
