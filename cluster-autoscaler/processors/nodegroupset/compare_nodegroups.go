@@ -108,7 +108,7 @@ func CreateGenericNodeInfoComparator(extraIgnoredLabels []string) NodeInfoCompar
 	}
 }
 
-// IsNodeInfoSimilar returns true if two NodeInfos have the same hardware configuration or
+// IsCloudProviderNodeInfoSimilar returns true if two NodeInfos have the same hardware configuration or
 // are similar enough to consider that the NodeGroups they come from are part of the same
 // NodeGroupSet. The criteria are somewhat arbitrary, but generally we check if resources
 // provided by both nodes are similar enough to likely be the same type of machine and if
