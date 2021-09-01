@@ -109,32 +109,32 @@ func TestNodesSimilarHardwareConfigurationLabels(t *testing.T) {
 	n2.ObjectMeta.Labels["test-label"] = "test-value"
 
 	// No hardware-configuration-id labels
-	checkNodesSimilar(t, n1, n2, IsNodeInfoSimilar, false)
+	checkNodesSimilar(t, n1, n2, IsCloudProviderNodeInfoSimilar, false)
 
 	// Empty hardware-configuration-id labels
 	n1.ObjectMeta.Labels[nodeGroupHwConfigLabel] = ""
 	n2.ObjectMeta.Labels[nodeGroupHwConfigLabel] = ""
-	checkNodesSimilar(t, n1, n2, IsNodeInfoSimilar, false)
+	checkNodesSimilar(t, n1, n2, IsCloudProviderNodeInfoSimilar, false)
 
 	// Only one hardware-configuration-id non empty
 	n1.ObjectMeta.Labels[nodeGroupHwConfigLabel] = ""
 	n2.ObjectMeta.Labels[nodeGroupHwConfigLabel] = "blah"
-	checkNodesSimilar(t, n1, n2, IsNodeInfoSimilar, false)
+	checkNodesSimilar(t, n1, n2, IsCloudProviderNodeInfoSimilar, false)
 
 	// Only one hardware-configuration-id present
 	delete(n1.ObjectMeta.Labels, nodeGroupHwConfigLabel)
 	n2.ObjectMeta.Labels[nodeGroupHwConfigLabel] = "blah"
-	checkNodesSimilar(t, n1, n2, IsNodeInfoSimilar, false)
+	checkNodesSimilar(t, n1, n2, IsCloudProviderNodeInfoSimilar, false)
 
 	// Different vales for hardware-configuration-id
 	n1.ObjectMeta.Labels[nodeGroupHwConfigLabel] = "blah1"
 	n2.ObjectMeta.Labels[nodeGroupHwConfigLabel] = "blah2"
-	checkNodesSimilar(t, n1, n2, IsNodeInfoSimilar, false)
+	checkNodesSimilar(t, n1, n2, IsCloudProviderNodeInfoSimilar, false)
 
 	// Same values for hardware-configuration-id
 	n1.ObjectMeta.Labels[nodeGroupHwConfigLabel] = "blah"
 	n2.ObjectMeta.Labels[nodeGroupHwConfigLabel] = "blah"
-	checkNodesSimilar(t, n1, n2, IsNodeInfoSimilar, true)
+	checkNodesSimilar(t, n1, n2, IsCloudProviderNodeInfoSimilar, true)
 }
 
 func TestNodesSimilarVariousMemoryRequirements(t *testing.T) {
